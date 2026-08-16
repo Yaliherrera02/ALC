@@ -1,0 +1,14 @@
+Cambios realizados según las observaciones que nos comentaron
+
+Llamamos al archivo re_alc.py porque notebook no reconocía el nombre re-alc.py
+
+Ejercicio 1
+eliminamos los auxiliares que no se usaban (por ejemplo swapCeros) y evitamos mezclar distintas formas de hacer la misma operacion(ej la de funcion transpuesta y reshape)
+Ejercicio 2
+Hicimos la modificación para la función calculaCholesky que recibe una matriz simétrica y definida positiva, pero en lugar de devolver las matrices L,L* (como esta en la teórica) devuelve solo la matriz L pues es la única que se necesita para la función pinvEcuacionesNormales
+
+Ejercicio 3
+Aunque se evaluaron posibles cambios en la implementación, pero como al final de la defensa se aclaro que iba a ser tomado tal como estaba, por lo que no realizamos modificaciones adicionales
+
+Ejercicio 4
+Rehicimos Cholesky en QR_con_GS, adaptamos la función para que acepte matrices no cuadradas. en HouseHolder, adaptamos la función para que devuelva R cuadrado añadimos plots de matrices de confusión para cada caso testeado en cada método. añadimos tablas comparativas de la velocidad de cada método y la precisión y exactitud de cada caso. Añadimos una conclusión
