@@ -141,5 +141,27 @@ def test_calcularAx_dimensiones_rectangulares():
 
 # ej 9
 #def intercambiarFilas(A,i,j):
-            
+
+#Ejercicio 10. Desarrollar una función sumar fila multiplo(A, i, j, s) que
+#a la fila i le sume la fila j multiplicada por un escalar s. Esta es una operación
+# elemental clave en la eliminación gaussiana. La operación debe ser in-place.
+
+def sumar_fila_multiplo(A, i, j, s):
+     #minimo la cantidad de filas y cantidad de columnas es mayor a 1
+     cant_columnas=A.shape[1]
+     
+     for k in range (0, cant_columnas):
+          A[i,k]=A[i,k]+s*A[j,k]
+
+#Ejercicio 13. Desarrollar una función matrizVandermonde(v), donde v ∈Rn
+#y se devuelve la matriz de Vandermonde V ∈Rn×n cuya fila i-ésima corresponde
+# con la potencias (i−1)-ésima de los elementos de v.
+
+def matriz_vandermonde (v):
+    n=v.size
+    A = np.zeros((n,n))
+    for i in range (0,n):
+     A[i]=v**(i)
+    return A
+               
     
