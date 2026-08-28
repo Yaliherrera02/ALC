@@ -141,6 +141,13 @@ def test_calcularAx_dimensiones_rectangulares():
 
 # ej 9
 #def intercambiarFilas(A,i,j):
+def intercambiarFilas(A,i,j):
+    fila_i = []
+    for elemento in A[i]:
+        fila_i.append(elemento)
+    A[i]=A[j]
+    A[j]=fila_i
+    return A
 
 #Ejercicio 10. Desarrollar una función sumar fila multiplo(A, i, j, s) que
 #a la fila i le sume la fila j multiplicada por un escalar s. Esta es una operación
