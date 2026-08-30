@@ -1,7 +1,7 @@
 
 import numpy as np
-# ej 1
-def es_cuadrada(A):
+# Ej 1
+def esCuadrada(A):
     f, c= A.shape
     if f==c:
         return True
@@ -26,15 +26,25 @@ def matrizLU(A):
 # ej 3
 
 # ej 4
-
+def diagonal(A):
+    m, n = A.shape
+    D = np.zeros((m, n))
+    #con este if abarcamos los casos en los que #filas<#columnas ó #columnas<#filas, evitando hacer comprobaciones innecesarias o recorrer indices inexistentes
+    if m <= n:
+        lim = m  
+    else:
+        lim = n 
+    for i in range(lim):
+        D[i, i] = A[i, i]
+    return D
 # ej 5
 def traza(A):
-    n, m =A.shape
+    n,m =A.shape
     res=0
     if n!=m:
         return None
     for i in range(n):
-        res+A[i,i]
+        res+=A[i,i]
     return res
 
 def test_traza_identidad():
@@ -55,7 +65,7 @@ def test_traza_matriz():
     assert traza(A) == 4
     
 # ej 6
-def transpuesta(A):
+def traspuesta(A):
     n, m = A.shape
     res= np.zeros((m,n))
     for i in range(n):
@@ -75,7 +85,7 @@ def test_transpuesta_rectangular():
         [3, 6]
     ])
 
-    assert np.array_equal(transpuesta(A), esperada)
+    assert np.array_equal(traspuesta(A), esperada)
     
 # ej 7
 def esSimetrica(A):
@@ -140,7 +150,6 @@ def test_calcularAx_dimensiones_rectangulares():
     assert np.allclose(resultado, esperado)
 
 # ej 9
-#def intercambiarFilas(A,i,j):
 def intercambiarFilas(A,i,j):
     fila_i = []
     for elemento in A[i]:
