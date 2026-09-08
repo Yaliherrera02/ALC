@@ -1,4 +1,4 @@
-# Tests L03-Normas
+import numpy as np
 
 # Tests norma
 assert(np.allclose(norma(np.array([1,1]),2),np.sqrt(2)))
@@ -7,14 +7,12 @@ assert(norma(np.random.rand(10),2)<=np.sqrt(10))
 assert(norma(np.random.rand(10),2)>=0)
 
 # Tests normaliza
-# Tests normaliza
 for x in normaliza([np.array([1]*k) for k in range(1,11)],2):
     assert(np.allclose(norma(x,2),1))
 for x in normaliza([np.array([1]*k) for k in range(2,11)],1):
     print(not np.allclose(norma(x,2),1) )
 for x in normaliza([np.random.rand(k) for k in range(1,11)],'inf'):
     assert( np.allclose(norma(x,'inf'),1) )
-
 
 # Tests normaExacta
 
