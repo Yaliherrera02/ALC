@@ -29,7 +29,6 @@ def norma(x, p):
         total += abs(x[i]) ** p
     return total ** (1 / p)
 
-import numpy as np
 """
 def norma2(x, p):
    
@@ -95,7 +94,7 @@ def normaMatMC(A, q, p, Np): #usamos.dot para que corra más rapido los tests, e
 
     return max_norma, max_vector
 
-def traspuesta(A):
+def transpuesta(A):
     n, m = A.shape
     res= np.zeros((m,n))
     for i in range(n):
@@ -110,7 +109,7 @@ def normaExacta(A, p=[1, 'inf']):
     """
     lista = []
     if p == 1 :
-        A = traspuesta(A)
+        A = transpuesta(A)
         for fila in A:
             lista.append(norma(fila,1))
         return max(lista) 
@@ -121,4 +120,42 @@ def normaExacta(A, p=[1, 'inf']):
     else :
         return
 
+def maxNorma(A,p): # calcula el la norma 1 o infinito de una matriz
+    n,m=A.shape
+    max=0
+    if p==1:
+        B=transpuesta(A) # calculo max por columnas al transponerlo
+        for fila in range(m):
+            valor=norma(B[fila],1) # 1 porque quiero la suma de la fila para luego ver el max de las filas
+            if valor >= max:
+                max=valor
+    else: # cuando p es inf
+        for fila in range(n): # calculo el max por filas
+            valor=norma(A[fila],1) # lo mismo, calculo las suma de la fila
+            if valor>=max:
+                max=valor
+    return max
 
+def normaExacta(A, p=[1, 'inf']):
+    if p==1 or p=='inf':
+        return maxNorma(A,p)
+    elif p==[1, 'inf']:
+        lista=[]
+        lista.append(maxNorma(A,1))
+        lista.append(maxNorma(A,'inf'))
+        return lista
+    else:
+        return None
+
+def condMC(A,p):
+    return normaMatMC(A,p,p,1000)[0]*normaMatMC(np.linalg.inv(A),p, p,1000)[0]
+          
+def condExacta(A, p):
+    """
+    Que devuelva el numero de condicion de A a partir de la formula de
+    la ecuacion (1) usando la norma p.
+    """
+    normaPdeA = normaExacta(A, p)
+    normaPdeAinv = normaExacta(np.linalg.inv(A), p)
+    nroDeCondicionDeA = normaPdeA * normaPdeAinv
+    return nroDeCondicionDeA        

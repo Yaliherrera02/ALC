@@ -122,7 +122,7 @@ def normaMatMC(A, q, p, Np): #usamos.dot para que corra más rapido los tests, e
 
     return max_norma, max_vector
 
-def traspuesta(A):
+def transpuesta(A):
     n, m = A.shape
     res= np.zeros((m,n))
     for i in range(n):
@@ -137,7 +137,7 @@ def normaExacta(A, p=[1, 'inf']):
     """
     lista = []
     if p == 1 :
-        A = traspuesta(A)
+        A = transpuesta(A)
         for fila in A:
             lista.append(norma(fila,1))
         return max(lista) 
@@ -147,14 +147,6 @@ def normaExacta(A, p=[1, 'inf']):
         return max(lista) 
     else :
         return
-    
-def transpuesta(A):
-    n, m = A.shape
-    res= np.zeros((m,n))
-    for i in range(n):
-        for j in range(m):
-            res[j,i]= A[i,j]
-    return res
 
 def maxNorma(A,p): # calcula el la norma 1 o infinito de una matriz
     n,m=A.shape
