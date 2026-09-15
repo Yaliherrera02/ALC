@@ -1,0 +1,106 @@
+def mult_matrices(A, B):
+    A = np.array(A, dtype=float)
+    B = np.array(B, dtype=float)
+    n, m = A.shape
+ 
+    if B.ndim == 1:
+        res = np.zeros(n)
+        for i in range(n):
+            s = 0.0
+            for k in range(m):
+                s += A[i, k] * B[k]
+            res[i] = s
+        return res
+    else:
+        m2, p = B.shape
+        res = np.zeros((n, p))
+        for i in range(n):
+            for j in range(p):
+                s = 0.0
+                for k in range(m):
+                    s += A[i, k] * B[k, j]
+                res[i, j] = s
+        return res
+ 
+ 
+# ---------------------------------------------------------------------
+# calculaLU
+# ---------------------------------------------------------------------
+def calculaLU(A):
+    """
+    Calcula la factorización LU de la matriz A (SIN pivoteo).
+    Devuelve (L, U, nops), donde nops es un int con la cantidad total
+    de operaciones aritméticas realizadas durante la triangulación
+    (sumas + restas + multiplicaciones + divisiones).
+ 
+    Si A es None, no es cuadrada, o no admite LU sin permutar (pivote
+    nulo en algún paso), retorna (None, None, 0).
+    """
+    if A is None:
+        return None, None, 0
+ 
+    A = np.array(A, dtype=float)
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        return None, None, 0
+ 
+    n = A.shape[0]
+    Ac = A.copy()
+ 
+    # Llevamos la cuenta de cada tipo de operación por separado, tal
+    # como pide el enunciado, y al final las sumamos en un único int.
+    sumas = 0
+    restas = 0
+    multiplicaciones = 0
+    divisiones = 0
+ 
+    for k in range(n - 1):
+        pivote = Ac[k, k]
+        if pivote == 0:
+            return None, None, 0
+ 
+        for i in range(k + 1, n):
+            m_ik = Ac[i, k] / pivote
+            divisiones += 1
+ 
+            Ac[i, k] = m_ik  # guardamos el multiplicador (entrada de L)
+ 
+            for j in range(k + 1, n):
+                Ac[i, j] = Ac[i, j] - m_ik * Ac[k, j]
+                multiplicaciones += 1
+                restas += 1
+                # (no hay sumas: la eliminación gaussiana siempre resta
+                #  un múltiplo de una fila a otra, nunca suma)
+ 
+    L = np.tril(Ac, -1) + np.eye(n)
+    U = np.triu(Ac)
+    nops = sumas + restas + multiplicaciones + divisiones
+    return L, U, nops
+ 
+ 
+# ---------------------------------------------------------------------
+# res_tri
+# ---------------------------------------------------------------------
+def res_tri(A, b, inferior=True):
+    """
+    Resuelve Ax = b cuando A es triangular (inferior si inferior=True,
+    superior si inferior=False), por sustitución hacia adelante/atrás.
+    """
+    A = np.array(A, dtype=float)
+    b = np.array(b, dtype=float)
+    n = len(b)
+    x = np.zeros(n)
+ 
+    if inferior:
+        for i in range(n):
+            s = b[i]
+            for j in range(i):
+                s -= A[i, j] * x[j]
+            x[i] = s / A[i, i]
+    else:
+        for i in range(n - 1, -1, -1):
+            s = b[i]
+            for j in range(i + 1, n):
+                s -= A[i, j] * x[j]
+            x[i] = s / A[i, i]
+ 
+    return x
