@@ -441,27 +441,6 @@ def detMatrizTriangular(U, tol=1e-10):  #funcion auxiliar para ver si U es sing
         return 0 
     return determinante
 
-def multiplicar_matrices(A, B):
-    """""
-    A es m x p y B es p x n.
-    """
-    m, p1 = A.shape
-    p2, n = B.shape
-    if p1 != p2:
-        return None
-    C = np.zeros((m, n))
-    # Bucle i: filas de A (m)
-    for i in range(m):
-        # Bucle j: columnas de B (n)
-        for j in range(n):
-            suma = 0
-    # Bucle k: Itera sobre los elementos de la fila i de A y la columna j de B (dimensión p)
-            for k in range(p1):
-                suma += A[i, k] * B[k, j]
-            C[i, j] = suma      
-    return C
-
-
 def esSingular(A):
     try:
         np.linalg.inv(A)
