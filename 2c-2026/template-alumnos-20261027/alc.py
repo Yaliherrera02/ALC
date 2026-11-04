@@ -12,7 +12,7 @@ def agregar_elemento(v):
 def ordenar_factores(M):
     """Multiplica M por una matriz que permuta y cambia de signo"""
     p=np.array([[0.,0.,1],[-1,0.,0.],[0.,-1,0.]])
-    M=p@M
+    M=matriz_x_matriz(p,M)
     return M
 
 def construye_T(dimension):
@@ -32,7 +32,7 @@ def construye_Ai(M,T):
     """construye las matrices de la forma [[U V W 1 0 0 0 0 -Uu -Vu -Wu -u][0 0 0 0 U V W 1 -Uv -Vv -Wv -v]]"""
     dim = M.shape[1]
     z = M.reshape(3*dim, 1)
-    A_i = (T @ z).reshape(2, 3*dim)
+    A_i = matriz_x_matriz(T,z).reshape(2, 3*dim)
     return A_i
 
 ## EJERCICIO 2 A ##
@@ -46,7 +46,7 @@ def obtenerQ3d(datos_2d_imagen, datos_3d):
         par_uv=datos_2d_imagen[j*2:j*2+2] #elijo el par
         par_uv=agregar_elemento(par_uv)
         par_uv=par_uv.reshape(-1,1)
-        base_Aj=par_uv@(coordenadas_3d)
+        base_Aj=matriz_x_matriz(par_uv,coordenadas_3d)
         base_Aj=ordenar_factores(base_Aj)
         Aj=construye_Ai(base_Aj,T)
         if j==0:
@@ -73,6 +73,7 @@ def resolverDLT3D(Q):
     # construimos la matriz de 3x4
     M = m.reshape(3,4)
     return M
+
 # EJERCICIO 2c
 def devolverMatricesCalibracion3d(M):
     # Divido M (3x4) en A (3x3) y b (3,)
@@ -120,7 +121,7 @@ def obtenerQ2d(datos_2d_imagen, datos_2d_objeto):
         par_uv = datos_2d_imagen[j*2:j*2+2]
         par_uv = agregar_elemento(par_uv)
         par_uv = par_uv.reshape(-1, 1)
-        base_Aj = par_uv @ coordenadas_2d
+        base_Aj = matriz_x_matriz(par_uv,coordenadas_2d)
         base_Aj = ordenar_factores(base_Aj)
         Aj = construye_Ai(base_Aj, T)
         if j == 0:
@@ -140,10 +141,20 @@ def construir_objPts():
             k += 1
     return puntos
 
+def resolverDLT(Q):
+    A = matriz_x_matriz(transpuesta(Q), Q)
+    S, D = diagRH(A)
 
-def resolverQhb(Q): #re utilizar la versión del 2
-    U, s, Vt = np.linalg.svd(Q, full_matrices=False)
-    h = Vt[-1, :]
+    indice = 0
+    for i in range(1, D.shape[0]):
+        if D[i,i] < D[indice,indice]:
+            indice = i
+
+    m = S[:, indice]
+    return m / norma(m, 2)
+
+def resolverQhb(Q): #estamos duplicando código
+    h = resolverDLT(Q)
     H = h.reshape(3, 3)
     
     return H
@@ -174,9 +185,8 @@ def armarA(Hlst):
     return A
 
 def calcularMatrizK2D(A):
-    U, s, Vt = np.linalg.svd(A, full_matrices=False)
-    #El vector singular derecho asociado al menor valor singular es nuestra solución aproximada b
-    b = Vt[-1, :]
+    #El vector singular derecho asociado al menor valor singular es nuestra solución aproximada b    
+    b = resolverDLT(A)
     # Construyo B simétrica
     B = np.array([
     [b[0], b[1], b[3]],
@@ -184,28 +194,34 @@ def calcularMatrizK2D(A):
     [b[3], b[4], b[5]]])
     if B[0, 0] < 0:
         B = -B
-    autovalores = np.linalg.eigvalsh(B)
-    print(autovalores)
-    if np.all(autovalores > 0):
+    if esSDP(B):
         print("B es definida positiva")
     else:
         print("B no es definida positiva")
-    L = np.linalg.cholesky(B)
+    L = calculaCholesky(B)
     R = L.T
-    K = np.linalg.inv(R)
+    K = inversa(R)
     K = K / K[2, 2]
     return K
 
 
+
+def producto_vectorial(u, v):
+    w = np.zeros(3)
+    w[0] = u[1]*v[2] - u[2]*v[1]
+    w[1] = u[2]*v[0] - u[0]*v[2]
+    w[2] = u[0]*v[1] - u[1]*v[0]
+    return w
+
 def obtenerPose2D(Hj, K):
-    M = np.linalg.inv(K) @ Hj
+    M = matriz_x_matriz(inversa(K) , Hj)
     a1 = M[:, 0]
     a2 = M[:, 1]
     a3 = M[:, 2]
-    lam = 1 / np.linalg.norm(a1)  
+    lam = 1 / norma(a1,2)  
     r1 = lam * a1
     r2 = lam * a2
-    r3 = np.cross(r1, r2) #armar producto vectorial en r3
+    r3 = producto_vectorial(r1, r2) 
     R = np.hstack((r1.reshape(3, 1), r2.reshape(3, 1), r3.reshape(3, 1)))
     t = lam * a3
     return R, t
