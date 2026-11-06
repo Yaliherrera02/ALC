@@ -66,80 +66,8 @@ def matriz_por_vector(A, v):
     return R
 
 # ------------------------------------------------------------------
-# PARTE 2: SVD reducida (sin método de la potencia, sin formar A^t A)
-# ------------------------------------------------------------------
-def svd_reducida(A, tol=1e-15, max_barridos=100):
-    """SVD reducida de A (m x n, con m >= n):  A = U diag(S) V^t.
-      U: m x n (columnas ortonormales), S: n valores singulares de MAYOR a MENOR,
-      V: n x n (ortogonal; la columna j es el vector singular derecho j).
-    Método: Jacobi de un lado (Hestenes). Se rotan de a pares las COLUMNAS de A hasta que
-    queden ortogonales entre sí. Cuando lo están, el largo de cada columna es un valor
-    singular y la columna normalizada es un vector de U. Las mismas rotaciones, acumuladas
-    en V, dan los vectores singulares derechos.
-    Ventaja: no se forma A^t A, así que no se pierde precisión en los valores singulares chicos."""
-    m = A.shape[0]; n = A.shape[1]
-    U = np.zeros((m, n))
-    for i in range(m):
-        for j in range(n):
-            U[i, j] = A[i, j]
-    V = np.eye(n)
-    for barrido in range(max_barridos):
-        hubo_rotacion = False
-        for p in range(n - 1):
-            for q in range(p + 1, n):
-                # alpha = |col p|^2, beta = |col q|^2, gamma = col p . col q
-                alpha = 0.0; beta = 0.0; gamma = 0.0
-                for i in range(m):
-                    alpha = alpha + U[i, p] * U[i, p]
-                    beta = beta + U[i, q] * U[i, q]
-                    gamma = gamma + U[i, p] * U[i, q]
-                # si las columnas ya son (casi) ortogonales no hay nada que rotar
-                if alpha * beta > 0.0 and abs(gamma) > tol * np.sqrt(alpha * beta):
-                    hubo_rotacion = True
-                    # ángulo de la rotación que anula gamma (c = cos, s = sin, sin usar cos/sin)
-                    zeta = (beta - alpha) / (2.0 * gamma)
-                    if abs(zeta) > 1e100:             # rotación casi nula: evita overflow de zeta^2
-                        t = 1.0 / (2.0 * zeta)
-                    elif zeta >= 0:
-                        t = 1.0 / (zeta + np.sqrt(1.0 + zeta * zeta))
-                    else:
-                        t = -1.0 / (-zeta + np.sqrt(1.0 + zeta * zeta))
-                    c = 1.0 / np.sqrt(1.0 + t * t)
-                    s = c * t
-                    # rotar las columnas p y q de U y de V
-                    for i in range(m):
-                        up = U[i, p]; uq = U[i, q]
-                        U[i, p] = c * up - s * uq
-                        U[i, q] = s * up + c * uq
-                    for i in range(n):
-                        vp = V[i, p]; vq = V[i, q]
-                        V[i, p] = c * vp - s * vq
-                        V[i, q] = s * vp + c * vq
-        if not hubo_rotacion:
-            break
-    # valores singulares = largos de las columnas; normalizar las columnas de U
-    S = np.zeros(n)
-    for j in range(n):
-        suma = 0.0
-        for i in range(m):
-            suma = suma + U[i, j] * U[i, j]
-        S[j] = np.sqrt(suma)
-        if S[j] > 1e-300:
-            for i in range(m):
-                U[i, j] = U[i, j] / S[j]
-    # ordenar de mayor a menor (selección), permutando también las columnas de U y V
-    for a in range(n - 1):
-        mayor = a
-        for b in range(a + 1, n):
-            if S[b] > S[mayor]:
-                mayor = b
-        if mayor != a:
-            tmp = S[a]; S[a] = S[mayor]; S[mayor] = tmp
-            for i in range(m):
-                tmp = U[i, a]; U[i, a] = U[i, mayor]; U[i, mayor] = tmp
-            for i in range(n):
-                tmp = V[i, a]; V[i, a] = V[i, mayor]; V[i, mayor] = tmp
-    return U, S, V
+
+
 
 # ------------------------------------------------------------------
 # PARTE 3: inversa de una matriz (para ir de la foto a la cancha)
