@@ -689,7 +689,7 @@ def diagRH(A, tol=1e-15,K=1000):
     else:
         B = matriz_x_matriz(H_v1,matriz_x_matriz(A,H_v1.T))
         AA = B[1:n,1:n]
-        #AA = (AA + AA.T) / 2 ## Corregimos la asimetría producida por redondeo
+        AA = (AA + AA.T) / 2 ## Corregimos la asimetría producida por redondeo
         SS, DD = diagRH(AA,tol,K)
         D = np.zeros((n,n))
         D[0][0] = l1.item()

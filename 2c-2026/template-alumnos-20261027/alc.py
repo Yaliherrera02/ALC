@@ -185,7 +185,6 @@ def armarA(Hlst):
     return A
 
 def calcularMatrizK2D(A):
-    #El vector singular derecho asociado al menor valor singular es nuestra solución aproximada b    
     b = resolverDLT(A)
     # Construyo B simétrica
     B = np.array([
@@ -194,9 +193,7 @@ def calcularMatrizK2D(A):
     [b[3], b[4], b[5]]])
     if B[0, 0] < 0:
         B = -B
-    if esSDP(B):
-        print("B es definida positiva")
-    else:
+    if not(esSDP(B)):
         print("B no es definida positiva")
     L = calculaCholesky(B)
     R = L.T
